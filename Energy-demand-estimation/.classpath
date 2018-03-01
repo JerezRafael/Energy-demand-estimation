@@ -2,5 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Rafinha/git/JerezRafael/Energy-demand-estimation/Energy-demand-estimation/external JARs/arpack-combo-0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rafinha/git/JerezRafael/Energy-demand-estimation/Energy-demand-estimation/external JARs/blas-0.8.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rafinha/git/JerezRafael/Energy-demand-estimation/Energy-demand-estimation/external JARs/mtj-0.9.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rafinha/git/JerezRafael/Energy-demand-estimation/Energy-demand-estimation/external JARs/mtj-0.9.13.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Rafinha/git/JerezRafael/Energy-demand-estimation/Energy-demand-estimation/external JARs/netlib-java-0.9.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
