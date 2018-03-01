@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="external JARs/arpack-combo-0.1.jar"/>
-	<classpathentry kind="lib" path="external JARs/blas-0.8.jar"/>
-	<classpathentry kind="lib" path="external JARs/mtj-0.9.9.jar"/>
-	<classpathentry kind="lib" path="external JARs/mtj-0.9.13.jar"/>
-	<classpathentry kind="lib" path="external JARs/netlib-java-0.9.3.jar"/>
+	<classpathentry kind="lib" path="Material/arpack-combo-0.1.jar"/>
+	<classpathentry kind="lib" path="Material/blas-0.8.jar"/>
+	<classpathentry kind="lib" path="Material/mtj-0.9.9.jar"/>
+	<classpathentry kind="lib" path="Material/mtj-0.9.13.jar"/>
+	<classpathentry kind="lib" path="Material/netlib-java-0.9.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
