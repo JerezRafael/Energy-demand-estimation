@@ -1,32 +1,33 @@
-import no.uib.cipr.matrix.NotConvergedException;
+package ELM;
 
+import no.uib.cipr.matrix.NotConvergedException;
 
 public class main {
 
 	/**
 	 * @param args
-	 * @throws NotConvergedException 
+	 * @throws NotConvergedException
 	 */
 	public static void main(String[] args) throws NotConvergedException {
 		// TODO Auto-generated method stub
-		elm ds = new elm(0, 20, "sig");
-		ds.train("sinc_train");		
-		ds.test("sinc_test");
-		
-		/*elm ds = new elm(1, 20, "sig");
-		ds.train("diabetes_train");
-		ds.test("diabetes_test");
-		*/
-		/*
-		elm ds = new elm(1, 20, "sig");
-		ds.train("segment_train");
-		ds.test("segment_test");
-		*/
+		elm ds1 = new elm(0, 20, "sig");
+		ds1.train("src\\ELM\\sinc_train");
+		ds1.test("src\\ELM\\sinc_test");
 
-		System.out.println("TrainingTime:"+ds.getTrainingTime());
-		System.out.println("TrainingAcc:"+ds.getTrainingAccuracy());
-		System.out.println("TestingTime:"+ds.getTestingTime());
-		System.out.println("TestAcc:"+ds.getTestingAccuracy());
+		elm ds2 = new elm(1, 20, "sig");
+		ds2.train("src\\ELM\\diabetes_train");
+		ds2.test("src\\ELM\\diabetes_test");
+
+		System.out.println("TrainingTime:" + ds1.getTrainingTime());
+		System.out.println("TrainingAcc:" + ds1.getTrainingAccuracy());
+		System.out.println("TestingTime:" + ds1.getTestingTime());
+		System.out.println("TestAcc:" + ds1.getTestingAccuracy());
+		System.out.println();
+
+		System.out.println("TrainingTime:" + ds2.getTrainingTime());
+		System.out.println("TrainingAcc:" + ds2.getTrainingAccuracy());
+		System.out.println("TestingTime:" + ds2.getTestingTime());
+		System.out.println("TestAcc:" + ds2.getTestingAccuracy());
 
 	}
 
