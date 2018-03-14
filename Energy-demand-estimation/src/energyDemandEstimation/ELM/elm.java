@@ -1,4 +1,4 @@
-package ELM;
+package energyDemandEstimation.ELM;
 
 /*
  * This library is free software;
@@ -43,6 +43,7 @@ public class elm {
 	private DenseMatrix testT;
 	private DenseMatrix Y;
 	private DenseMatrix T;
+	private BufferedReader reader;
 
 	/**
 	 * Construct an ELM
@@ -84,7 +85,7 @@ public class elm {
 	// if the class value is 1,2...,number of classes should plus 1
 	public DenseMatrix loadmatrix(String filename) throws IOException {
 
-		BufferedReader reader = new BufferedReader(new FileReader(new File(filename)));
+		reader = new BufferedReader(new FileReader(new File(filename)));
 		// FileInputStream
 		String firstlineString = reader.readLine();
 		String[] strings = firstlineString.split(" ");
