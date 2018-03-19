@@ -5,45 +5,45 @@ import energyDemandEstimation.misc.RandomManager;
 public class CRandom implements Constructive {
 
 	@Override
-	public double[][] crearDatosEntrada(double[][] selectedData) {
+	public double[][][] crearDatosEntrada(Data data) {
 
 		boolean[] variables = elegirVariables();
-		int numVariables = contarVariables(variables);
-		double[][] returnData = new double[selectedData.length][numVariables + 1]; // datos de entrada determinados por
-																					// las variables elegidas
-		for (int i = 0; i < selectedData.length; i++) {
-			returnData[i][0] = selectedData[i][0];
-			for (int j = 0; j < returnData[i].length - 1; j++) {
-				if (variables[j]) // cuando es una variable elegida, la copia
-					returnData[i][j + 1] = selectedData[i][j + 1];
+		
+		double[][][] returnData = new double[2][][];
+		
+		double[][] allTrainData = data.getTrainData();
+		returnData[0] = new double[allTrainData.length][contarVariables(variables) + 1];
+		for (int i = 0; i < returnData[0].length; i++) {
+			returnData[0][i][0] = allTrainData[i][0];
+			int k = 1;
+			for (int j = 0; j < variables.length; j++) {
+				if (variables[j]) { // cuando es una variable elegida, la copia
+					returnData[0][i][k] = allTrainData[i][k];
+					k++;
+				}
+			}
+		}
+
+		double[][] allTestData = data.getTestData();
+		returnData[1] = new double[allTestData.length][contarVariables(variables) + 1];
+		for (int i = 0; i < returnData[1].length; i++) {
+			returnData[1][i][0] = allTestData[i][0];
+			int k = 1;
+			for (int j = 0; j < variables.length - 1; j++) {
+				if (variables[j]) { // cuando es una variable elegida, la copia
+					returnData[1][i][k] = allTestData[i][k];
+					k++;
+				}
 			}
 		}
 		return returnData;
 	}
 
-	@Override
-	public double[][] crearDatosEntrada(double[][] selectedData, boolean[] variables) {
-
-		int numVariables = contarVariables(variables);
-		double[][] returnData = new double[selectedData.length][numVariables + 1]; // datos de entrada determinados por
-																					// las variables elegidas
-		for (int i = 0; i < selectedData.length; i++) {
-			returnData[i][0] = selectedData[i][0];
-			for (int j = 0; j < returnData[i].length - 1; j++) {
-				if (variables[j]) // cuando es una variable elegida, la copia
-					returnData[i][j + 1] = selectedData[i][j + 1];
-			}
-		}
-		return returnData;
-	}
-
-	@Override
-	public boolean[] elegirVariables() {
+	private boolean[] elegirVariables() {
 
 		boolean[] variables = new boolean[14]; // array que elige las variables aleatoriamente
 		for (int i = 0; i < 14; i++) {
-			RandomManager random = new RandomManager(1234);
-			variables[i] = random.getRandom().nextBoolean();
+			variables[i] = RandomManager.getRandom().nextBoolean();
 		}
 		return variables;
 	}

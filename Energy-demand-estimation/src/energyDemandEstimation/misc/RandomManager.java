@@ -4,17 +4,13 @@ import java.util.Random;
 
 public class RandomManager {
 
-	private Random rnd;
+	private static Random rnd;
 	
-	public RandomManager (int seed) {
-		setSeed(seed);
-	}
-	
-	public void setSeed(int seed) {
+	public static void setSeed(int seed) {
 		rnd = new Random(seed);
 	}
 	
-	public Random getRandom() {
+	public static Random getRandom() {
 		return rnd;
 	}
 }
