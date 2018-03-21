@@ -17,7 +17,7 @@ public class CRandom implements Constructive {
 			returnData[0][i][0] = allTrainData[i][0];
 			int k = 1;
 			for (int j = 0; j < variables.length; j++) {
-				if (variables[j]) { // cuando es una variable elegida, la copia
+				if (variables[j]) { // cuando es una variable elegida, la copia y pasamos de posicion
 					returnData[0][i][k] = allTrainData[i][k];
 					k++;
 				}
@@ -29,8 +29,8 @@ public class CRandom implements Constructive {
 		for (int i = 0; i < returnData[1].length; i++) {
 			returnData[1][i][0] = allTestData[i][0];
 			int k = 1;
-			for (int j = 0; j < variables.length - 1; j++) {
-				if (variables[j]) { // cuando es una variable elegida, la copia
+			for (int j = 0; j < variables.length; j++) {
+				if (variables[j]) { // cuando es una variable elegida, la copia y pasamos de posicion
 					returnData[1][i][k] = allTestData[i][k];
 					k++;
 				}

@@ -8,7 +8,7 @@ import no.uib.cipr.matrix.NotConvergedException;
 public class EnergyDemandEstimation {
 
 	public static void main(String[] args) throws NotConvergedException {
-		
+
 		RandomManager.setSeed(1234);
 
 		double mejorError = 0;
@@ -24,7 +24,13 @@ public class EnergyDemandEstimation {
 
 		for (int i = 0; i < 100; i++) {
 			consumoEnergia = new elm(0, 20, "sig");
-			consumoEnergia.testOut(testData);
+			double[][] testDataTrasp = new double[testData[0].length][testData.length];
+			for (int x = 0; x < testDataTrasp.length; x++) {
+				for (int y = 0; y < testDataTrasp[0].length; y++) {
+					testDataTrasp[x][y] = testData[y][x];
+				}
+			}
+			consumoEnergia.testOut(testDataTrasp);
 
 			if (consumoEnergia.getTestingAccuracy() > mejorError) {
 				mejorError = consumoEnergia.getTestingAccuracy();
