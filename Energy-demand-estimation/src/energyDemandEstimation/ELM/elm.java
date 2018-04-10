@@ -428,22 +428,22 @@ public class elm {
 		numTestData = test_set.numRows();
 		NumberofInputNeurons = test_set.numColumns() - 1;
 
-		DenseMatrix ttestT = new DenseMatrix(numTestData, 1);
-		DenseMatrix ttestP = new DenseMatrix(numTestData, NumberofInputNeurons);
+		DenseMatrix ttestT = new DenseMatrix(numTestData, 1); // va a ser la columna inutil 5000 traspuesta
+		DenseMatrix ttestP = new DenseMatrix(numTestData, NumberofInputNeurons); // va a ser todos los datos utiles traspuesta
 		for (int i = 0; i < numTestData; i++) {
 			ttestT.set(i, 0, test_set.get(i, 0));
 			for (int j = 1; j <= NumberofInputNeurons; j++)
 				ttestP.set(i, j - 1, test_set.get(i, j));
 		}
 
-		testT = new DenseMatrix(1, numTestData);
-		testP = new DenseMatrix(NumberofInputNeurons, numTestData);
+		testT = new DenseMatrix(1, numTestData); // va a ser la columna inutil 5000
+		testP = new DenseMatrix(NumberofInputNeurons, numTestData); // va a ser todos los datos utiles
 		ttestT.transpose(testT);
 		ttestP.transpose(testP);
 		// test_set.transpose(testP);
 
 		DenseMatrix tempH_test = new DenseMatrix(NumberofHiddenNeurons, numTestData);
-		InputWeight.mult(testP, tempH_test);
+		InputWeight.mult(testP, tempH_test); // FILASxCOLUMNAS - 2x4 * 20x4 - 4x12 * 20x12
 		DenseMatrix BiasMatrix2 = new DenseMatrix(NumberofHiddenNeurons, numTestData);
 
 		for (int j = 0; j < numTestData; j++) {
