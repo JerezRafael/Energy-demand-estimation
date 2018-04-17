@@ -80,13 +80,46 @@ public class Data {
 	public double[] getYear(int year) {
 		return data[year % 1981];
 	}
-	
-	public double[][] getTrainData() {
-		return trainData;
-	}
-	
-	public double[][] getTestData() {
-		return testData;
+
+	public double[][] getTrainData(boolean[] selectedVars) {
+
+		double[][] trainDataSet = new double[trainData.length][contarVariables(selectedVars) + 1];
+		for (int i = 0; i < trainDataSet.length; i++) {
+			trainDataSet[i][0] = trainData[i][0];
+			int k = 1;
+			for (int j = 0; j < selectedVars.length; j++) {
+				if (selectedVars[j]) { // cuando es una variable elegida, la copia y pasamos de posicion
+					trainDataSet[i][k] = trainData[i][k];
+					k++;
+				}
+			}
+		}
+		return trainDataSet;
 	}
 
+	public double[][] getTestData(boolean[] selectedVars) {
+
+		double[][] testDataSet = new double[testData.length][contarVariables(selectedVars) + 1];
+		for (int i = 0; i < testDataSet.length; i++) {
+			testDataSet[i][0] = testData[i][0];
+			int k = 1;
+			for (int j = 0; j < selectedVars.length; j++) {
+				if (selectedVars[j]) { // cuando es una variable elegida, la copia y pasamos de posicion
+					testDataSet[i][k] = testData[i][k];
+					k++;
+				}
+			}
+		}
+		return testDataSet;
+	}
+
+	private int contarVariables(boolean[] selectedVars) {
+
+		int numVariables = 0; // contador de variables que vamos a utilizar
+		for (int i = 0; i < selectedVars.length; i++) {
+			if (selectedVars[i])
+				numVariables++;
+		}
+		return numVariables;
+	}
 }

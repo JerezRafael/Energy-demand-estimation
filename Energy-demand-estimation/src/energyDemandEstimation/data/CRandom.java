@@ -1,61 +1,40 @@
 package energyDemandEstimation.data;
 
+import energyDemandEstimation.Solution;
+import energyDemandEstimation.ELM.elm;
 import energyDemandEstimation.misc.RandomManager;
+import no.uib.cipr.matrix.NotConvergedException;
 
 public class CRandom implements Constructive {
 
 	@Override
-	public double[][][] crearDatosEntrada(Data data) {
+	public Solution generateSolution(Data data) throws NotConvergedException {
 
-		boolean[] variables = elegirVariables();
-		
-		double[][][] returnData = new double[2][][];
-		
-		double[][] allTrainData = data.getTrainData();
-		returnData[0] = new double[allTrainData.length][contarVariables(variables) + 1];
-		for (int i = 0; i < returnData[0].length; i++) {
-			returnData[0][i][0] = allTrainData[i][0];
-			int k = 1;
-			for (int j = 0; j < variables.length; j++) {
-				if (variables[j]) { // cuando es una variable elegida, la copia y pasamos de posicion
-					returnData[0][i][k] = allTrainData[i][k];
-					k++;
-				}
+		RandomManager.setSeed(1234);
+		boolean[] selectedVars = new boolean[14];
+		elm elm;
+		boolean[] bestSol = null;
+		double bestAccuracy = 0;
+
+		for (int i = 0; i < 100; i++) {
+
+			for (int j = 0; j < 14; j++) { // bucle que genera una posible solucion aleatoriamente
+				selectedVars[j] = RandomManager.getRandom().nextBoolean();
+			}
+
+			elm = new elm(0, 20, "sig");
+			double[][] trainData = data.getTrainData(selectedVars);
+			elm.train(trainData);
+
+			if (elm.getTrainingAccuracy() > bestAccuracy) {
+				bestAccuracy = elm.getTrainingAccuracy();
+				bestSol = selectedVars;
 			}
 		}
 
-		double[][] allTestData = data.getTestData();
-		returnData[1] = new double[allTestData.length][contarVariables(variables) + 1];
-		for (int i = 0; i < returnData[1].length; i++) {
-			returnData[1][i][0] = allTestData[i][0];
-			int k = 1;
-			for (int j = 0; j < variables.length; j++) {
-				if (variables[j]) { // cuando es una variable elegida, la copia y pasamos de posicion
-					returnData[1][i][k] = allTestData[i][k];
-					k++;
-				}
-			}
-		}
-		return returnData;
-	}
+		System.out.println("La mejor ejecución ha tenido una accuracy de " + bestAccuracy);
 
-	private boolean[] elegirVariables() {
-
-		boolean[] variables = new boolean[14]; // array que elige las variables aleatoriamente
-		for (int i = 0; i < 14; i++) {
-			variables[i] = RandomManager.getRandom().nextBoolean();
-		}
-		return variables;
-	}
-
-	private int contarVariables(boolean[] variables) {
-
-		int numVariables = 0; // contador de variables que vamos a utilizar
-		for (int i = 0; i < variables.length; i++) {
-			if (variables[i])
-				numVariables++;
-		}
-		return numVariables;
+		return new Solution(bestSol, data);
 	}
 
 }

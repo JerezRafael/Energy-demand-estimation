@@ -1,6 +1,9 @@
 package energyDemandEstimation.data;
 
+import energyDemandEstimation.Solution;
+import no.uib.cipr.matrix.NotConvergedException;
+
 public interface Constructive {
 
-	public double[][][] crearDatosEntrada(Data data);
+	public Solution generateSolution(Data data) throws NotConvergedException;
 }
