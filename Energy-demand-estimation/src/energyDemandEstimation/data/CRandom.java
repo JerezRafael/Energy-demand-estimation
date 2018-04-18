@@ -22,6 +22,7 @@ public class CRandom implements Constructive {
 				selectedVars[j] = RandomManager.getRandom().nextBoolean();
 			}
 
+			// Se prueba la posible solución
 			elm = new elm(0, 20, "sig");
 			double[][] trainData = data.getTrainData(selectedVars);
 			elm.train(trainData);
@@ -32,7 +33,7 @@ public class CRandom implements Constructive {
 			}
 		}
 
-		System.out.println("La mejor ejecución ha tenido una accuracy de " + bestAccuracy);
+		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy);
 
 		return new Solution(bestSol, data);
 	}
