@@ -1,14 +1,10 @@
 package energyDemandEstimation;
 
-import energyDemandEstimation.data.*;
-
 public class Solution {
 
 	private boolean[] selectedVars;
-	private Data data;
 
-	public Solution(boolean[] solucion, Data data) {
-		this.data = data;
+	public Solution(boolean[] solucion) {
 		this.selectedVars = solucion;
 	}
 
