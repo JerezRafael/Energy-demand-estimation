@@ -41,6 +41,8 @@ public class EnergyDemandEstimation {
 
 		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy);
 
+		bestSol = grasp.improve(bestSol);
+
 		elm = new elm(0, 20, "sig");
 		elm.train(data.getTrainData(bestSol.getSelectedVars()));
 		elm.testOut(data.getTestData(bestSol.getSelectedVars()));
@@ -66,6 +68,8 @@ public class EnergyDemandEstimation {
 		}
 
 		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy);
+
+		sol = grasp.improve(sol);
 
 		elm = new elm(0, 20, "sig");
 		elm.train(data.getTrainData(sol.getSelectedVars()));
