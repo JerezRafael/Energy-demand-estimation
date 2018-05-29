@@ -17,7 +17,7 @@ public class EnergyDemandEstimation {
 		Solution sol = null;
 		Solution bestSol;
 		double bestAccuracy;
-		GRASP grasp = new GRASP(data, 100);
+		GRASP grasp = new GRASP(data, 10);
 
 		System.out.println("-----Random Constructive-----");
 		constructive = new CRandom();
@@ -47,7 +47,7 @@ public class EnergyDemandEstimation {
 		elm.train(data.getTrainData(bestSol.getSelectedVars()));
 		elm.testOut(data.getTestData(bestSol.getSelectedVars()));
 
-		System.out.println("-----Votos Constructive-----");
+		System.out.println("\n-----Votos Constructive-----");
 		constructive = new CVotos(nIterations);
 
 		bestSol = null;
