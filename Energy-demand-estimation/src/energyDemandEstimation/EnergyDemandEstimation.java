@@ -17,7 +17,8 @@ public class EnergyDemandEstimation {
 		Solution sol = null;
 		Solution bestSol;
 		double bestAccuracy;
-		GRASP grasp = new GRASP(data, 10);
+		GRASP grasp = new GRASP(data);
+		int[] mostUsedVars = new int[14];
 
 		System.out.println("-----Random Constructive-----");
 		constructive = new CRandom();
@@ -36,16 +37,21 @@ public class EnergyDemandEstimation {
 			if (elm.getTrainingAccuracy() > bestAccuracy) { // Si es mejor se guarda
 				bestAccuracy = elm.getTrainingAccuracy();
 				bestSol = sol;
+				for (int j = 0; j < mostUsedVars.length; j++) {
+					if (sol.getSelectedVars()[j])
+						mostUsedVars[j]++;
+				}
 			}
 		}
 
 		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy);
 
-		bestSol = grasp.improve(bestSol);
+		bestSol = grasp.improve(bestSol, mostUsedVars);
 
 		elm = new elm(0, 20, "sig");
 		elm.train(data.getTrainData(bestSol.getSelectedVars()));
-		elm.testOut(data.getTestData(bestSol.getSelectedVars()));
+		bestAccuracy = elm.getTrainingAccuracy();
+		System.out.println("Despues del improve ha sido " + bestAccuracy);
 
 		System.out.println("\n-----Votos Constructive-----");
 		constructive = new CVotos(nIterations);
@@ -64,16 +70,20 @@ public class EnergyDemandEstimation {
 			if (elm.getTrainingAccuracy() > bestAccuracy) { // Si es mejor se guarda
 				bestAccuracy = elm.getTrainingAccuracy();
 				bestSol = sol;
+				for (int j = 0; j < mostUsedVars.length; j++) {
+					if (sol.getSelectedVars()[j])
+						mostUsedVars[j]++;
+				}
 			}
 		}
 
 		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy);
 
-		sol = grasp.improve(sol);
+		sol = grasp.improve(sol, mostUsedVars);
 
 		elm = new elm(0, 20, "sig");
-		elm.train(data.getTrainData(sol.getSelectedVars()));
-		elm.testOut(data.getTestData(sol.getSelectedVars()));
+		elm.train(data.getTrainData(sol.getSelectedVars()));bestAccuracy = elm.getTrainingAccuracy();
+		System.out.println("Despues del improve ha sido " + bestAccuracy);
 
 	}
 

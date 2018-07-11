@@ -1,8 +1,6 @@
 package energyDemandEstimation;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import energyDemandEstimation.ELM.elm;
 import energyDemandEstimation.data.*;
@@ -11,64 +9,73 @@ import no.uib.cipr.matrix.NotConvergedException;
 
 public class GRASP {
 
-	private int splitter;
 	private Data data;
 
-	public GRASP(Data data, int splitter) {
+	public GRASP(Data data) {
 		this.data = data;
-		this.splitter = splitter;
 	}
 
-	public Solution improve(Solution solution) throws NotConvergedException {
+	@SuppressWarnings("unchecked")
+	public Solution improve(Solution solution, int[] mostUsedVars) throws NotConvergedException {
 
-		double[][] testYears = data.getTestData(solution.getSelectedVars());
+		ArrayList<Integer> roullete = new ArrayList<Integer>();
 
-		// cojo un año al azar, debería hacer todo una vez por cada año?
-
-		final double[] sample = testYears[RandomManager.getRandom().nextInt(testYears.length)];
-		final double objetive = sample[sample.length - 1];
-		double[] probe = new double[splitter + 1];
-		for (int i = 0; i < probe.length; i++) {
-			probe[i] = 1 / splitter; // No funciona
-			probe[i] = probe[i] * i;
-			// probe[i] = 1 / splitter * i;
+		for (int i = 0; i < mostUsedVars.length; i++) {
+			mostUsedVars[i]++;
 		}
 
-		List<Double> variables = new ArrayList<>();
-		for (double e : sample) {
-			variables.add(e);
-		}
+		int j = 0;
 
-		elm elm = new elm(0, 20, "sig");
-		double[][] trainData = data.getTrainData(solution.getSelectedVars());
-		elm.train(trainData);
-
-		double error;
-		double bestError = 999;
-		double improve = 1;
-
-		while (improve > 0) { // bucle hasta que no mejore de ninguna manera
-			Collections.shuffle(variables);
-			for (int i = 0; i < variables.size() - 1; i++) { // bucle para recorrer cada dimension
-				for (int j = 0; j < probe.length; j++) { // bucle para recorrer cada posicion del splitter
-					List<Double> aux = variables;
-					aux.set(i, probe[j]);
-
-					// probar si ha mejorado con n;
-					double[] output = elm.testOut(sample);
-					error = objetive - output[0];
-					improve = bestError - error;
-
-					if (improve > 0) {
-						bestError = error;
-						break;
-					}
-				}
-				if (improve > 0)
-					break;
+		for (int i = 0; i < mostUsedVars.length; i++) {
+			j = 0;
+			while (j < mostUsedVars[i]) {
+				roullete.add(i);
+				j++;
 			}
 		}
 
-		return solution; // que devuelvo?
+		double bestAccuracy = 0;
+		boolean[] selectedVars = new boolean[14];
+		boolean[] varsAux;
+		int n, var;
+		elm elm;
+		double[][] trainData;
+		final ArrayList<Integer> finalRoullete = (ArrayList<Integer>) roullete.clone();
+		boolean removing;
+		for (int i = 0; i < 100; i++) {
+
+			roullete = (ArrayList<Integer>) finalRoullete.clone();
+
+			varsAux = new boolean[14];
+			n = 1 + RandomManager.getRandom().nextInt(14); // numero de variables que cogeremos
+
+			// si en mostUsedVars hay 5 variables, n deberia poder salir mas de 5?
+
+			j = 0;
+			while (j < n) { // escoger nuevas variables
+
+				var = roullete.get(RandomManager.getRandom().nextInt(roullete.size()));
+				varsAux[var] = true;
+				removing = true;
+				while (removing) {
+					removing = roullete.remove((Integer)var);
+				}
+
+				j++;
+			}
+			elm = new elm(0, 20, "sig");
+			trainData = data.getTrainData(varsAux);
+			elm.train(trainData);
+
+			if (elm.getTrainingAccuracy() > bestAccuracy) { // Si es mejor se guarda
+				bestAccuracy = elm.getTrainingAccuracy();
+				selectedVars = varsAux;
+			}
+
+		}
+		Solution newSolution = new Solution(selectedVars);
+
+		return newSolution;
+
 	}
 }
