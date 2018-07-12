@@ -9,7 +9,6 @@ public class CRandom implements Constructive {
 	@Override
 	public Solution generateSolution() throws NotConvergedException {
 
-		RandomManager.setSeed(1234);
 		boolean[] selectedVars = new boolean[14];
 
 		for (int j = 0; j < 14; j++) { // bucle que genera una posible solucion aleatoriamente
