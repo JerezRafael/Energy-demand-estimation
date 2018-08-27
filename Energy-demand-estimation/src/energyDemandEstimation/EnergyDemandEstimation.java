@@ -6,6 +6,7 @@ import energyDemandEstimation.misc.RandomManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import energyDemandEstimation.ELM.elm;
 import no.uib.cipr.matrix.NotConvergedException;
@@ -17,6 +18,33 @@ public class EnergyDemandEstimation {
 	public static void main(String[] args) throws NotConvergedException {
 
 		RandomManager.setSeed(1234);
+		
+		// pruebas
+		
+		
+		
+		
+		// puerta AND
+		System.out.println("\nTest AND:");
+		elm ds3 = new elm(0, 20, "sig");
+		double[][] traindata = new double[][] { { 0, 0 }, { 1, 1 } };
+		//double[][] traindata = new double[][] { { 1, 0, 0 }, { 0, 0, 1 }, { 0, 1, 0 }, { 1, 1, 1 } };
+		ds3.train(traindata);
+		double[][] inpt = new double[][] { { 5000, 1}};
+		//double[][] inpt = new double[][] { { 5000, 0, 0 }, { 5000, 0, 1 }, { 5000, 1, 0 }, { 5001, 1, 1 } };
+		double[] salida = ds3.testOut(inpt);
+		System.out.println(Arrays.toString(salida));
+
+		System.out.println("TrainingTime:" + ds3.getTrainingTime());
+		System.out.println("TrainingAcc:" + ds3.getTrainingAccuracy());
+		System.out.println();
+		
+		
+		
+		
+		
+		
+		//pruebas
 
 		Data data = new Data();
 		Constructive constructive;
@@ -52,8 +80,7 @@ public class EnergyDemandEstimation {
 				elm = new elm(0, 20, "sig");
 				double[][] trainData = data.getTrainData(sol.getSelectedVars());
 				elm.train(trainData);
-				
-				
+
 				varsAux = sol.getSelectedVars();
 				vars = "[";
 				for (int j = 0; j < varsAux.length; j++) {
@@ -118,7 +145,7 @@ public class EnergyDemandEstimation {
 
 		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy);
 
-		sol = grasp.improve(sol, mostUsedVars);
+		//sol = grasp.improve(sol, mostUsedVars);
 
 		elm = new elm(0, 20, "sig");
 		elm.train(data.getTrainData(sol.getSelectedVars()));
