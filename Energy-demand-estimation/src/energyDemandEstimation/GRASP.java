@@ -1,8 +1,5 @@
 package energyDemandEstimation;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import energyDemandEstimation.ELM.elm;
@@ -46,66 +43,37 @@ public class GRASP {
 		final ArrayList<Integer> finalRoullete = (ArrayList<Integer>) roullete.clone();
 		boolean removing;
 
-		/* CSV */
-		PrintWriter pw;
-		String vars;
-		try {
-			pw = new PrintWriter(new File("var-error-GRASP.csv"));
-			StringBuilder sb = new StringBuilder();
-			sb.append("Variables");
-			sb.append(";");
-			sb.append("Accuracy");
-			sb.append('\n');
+		for (int i = 0; i < 100; i++) {
 
-			for (int i = 0; i < 100; i++) {
+			roullete = (ArrayList<Integer>) finalRoullete.clone();
 
-				roullete = (ArrayList<Integer>) finalRoullete.clone();
+			varsAux = new boolean[14];
+			n = 1 + RandomManager.getRandom().nextInt(14); // numero de variables que cogeremos
 
-				varsAux = new boolean[14];
-				n = 1 + RandomManager.getRandom().nextInt(14); // numero de variables que cogeremos
+			// si en mostUsedVars hay 5 variables, n deberia poder salir mas de 5?
 
-				// si en mostUsedVars hay 5 variables, n deberia poder salir mas de 5?
+			j = 0;
+			while (j < n) { // escoger nuevas variables
 
-				j = 0;
-				while (j < n) { // escoger nuevas variables
-
-					var = roullete.get(RandomManager.getRandom().nextInt(roullete.size()));
-					varsAux[var] = true;
-					removing = true;
-					while (removing) {
-						removing = roullete.remove((Integer) var);
-					}
-
-					j++;
-				}
-				elm = new elm(0, 20, "sig");
-				trainData = data.getTrainData(varsAux);
-				elm.train(trainData);
-
-				vars = "[";
-				for (int k = 0; k < varsAux.length; k++) {
-					if (varsAux[k])
-						vars = vars + " " + k;
-				}
-				vars = vars + " ]";
-				sb.append(vars);
-				sb.append(';');
-				sb.append(elm.getTrainingAccuracy());
-				sb.append('\n');
-
-				if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
-					bestAccuracy = elm.getTrainingAccuracy();
-					selectedVars = varsAux;
+				var = roullete.get(RandomManager.getRandom().nextInt(roullete.size()));
+				varsAux[var] = true;
+				removing = true;
+				while (removing) {
+					removing = roullete.remove((Integer) var);
 				}
 
+				j++;
+			}
+			elm = new elm(0, 20, "sig");
+			trainData = data.getTrainData(varsAux);
+			elm.train(trainData);
+
+			if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
+				bestAccuracy = elm.getTrainingAccuracy();
+				selectedVars = varsAux;
 			}
 
-			pw.write(sb.toString());
-			pw.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		}
-		/* CSV */
 
 		Solution newSolution = new Solution(selectedVars);
 
