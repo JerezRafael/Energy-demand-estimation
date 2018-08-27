@@ -59,7 +59,7 @@ public class EnergyDemandEstimation {
 		constructive = new CRandom();
 
 		bestSol = null;
-		bestAccuracy = 0;
+		bestAccuracy = Double.MAX_VALUE;
 
 		/* CSV */
 		PrintWriter pw;
@@ -93,7 +93,7 @@ public class EnergyDemandEstimation {
 				sb.append(elm.getTrainingAccuracy());
 				sb.append('\n');
 
-				if (elm.getTrainingAccuracy() > bestAccuracy) { // Si es mejor se guarda
+				if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
 					bestAccuracy = elm.getTrainingAccuracy();
 					bestSol = sol;
 					for (int j = 0; j < mostUsedVars.length; j++) {
@@ -123,7 +123,7 @@ public class EnergyDemandEstimation {
 		constructive = new CVotos(nIterations);
 
 		bestSol = null;
-		bestAccuracy = 0;
+		bestAccuracy = Double.MAX_VALUE;
 
 		for (int i = 0; i < nIterations; i++) {
 			sol = constructive.generateSolution();
@@ -133,7 +133,7 @@ public class EnergyDemandEstimation {
 			double[][] trainData = data.getTrainData(sol.getSelectedVars());
 			elm.train(trainData);
 
-			if (elm.getTrainingAccuracy() > bestAccuracy) { // Si es mejor se guarda
+			if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
 				bestAccuracy = elm.getTrainingAccuracy();
 				bestSol = sol;
 				for (int j = 0; j < mostUsedVars.length; j++) {

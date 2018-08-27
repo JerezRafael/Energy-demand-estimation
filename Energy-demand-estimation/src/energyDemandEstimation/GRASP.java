@@ -37,7 +37,7 @@ public class GRASP {
 			}
 		}
 
-		double bestAccuracy = 0;
+		double bestAccuracy = Double.MAX_VALUE;
 		boolean[] selectedVars = new boolean[14];
 		boolean[] varsAux;
 		int n, var;
@@ -93,7 +93,7 @@ public class GRASP {
 				sb.append(elm.getTrainingAccuracy());
 				sb.append('\n');
 
-				if (elm.getTrainingAccuracy() > bestAccuracy) { // Si es mejor se guarda
+				if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
 					bestAccuracy = elm.getTrainingAccuracy();
 					selectedVars = varsAux;
 				}
