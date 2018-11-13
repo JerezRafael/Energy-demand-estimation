@@ -1,17 +1,18 @@
-package energyDemandEstimation;
+package GRASP;
 
 import java.util.ArrayList;
 
 import energyDemandEstimation.ELM.elm;
 import energyDemandEstimation.data.*;
 import energyDemandEstimation.misc.RandomManager;
+import energyDemandEstimation.misc.Solution;
 import no.uib.cipr.matrix.NotConvergedException;
 
-public class GRASP {
+public class LocalSearch {
 
 	private Data data;
 
-	public GRASP(Data data) {
+	public LocalSearch(Data data) {
 		this.data = data;
 	}
 

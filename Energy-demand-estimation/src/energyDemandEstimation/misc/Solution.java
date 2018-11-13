@@ -1,4 +1,4 @@
-package energyDemandEstimation;
+package energyDemandEstimation.misc;
 
 public class Solution {
 

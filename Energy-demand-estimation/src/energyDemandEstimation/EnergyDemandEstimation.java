@@ -2,9 +2,14 @@ package energyDemandEstimation;
 
 import energyDemandEstimation.data.*;
 import energyDemandEstimation.misc.RandomManager;
+import energyDemandEstimation.misc.Solution;
 
 import java.util.Arrays;
 
+import GRASP.CRandom;
+import GRASP.CVotos;
+import GRASP.Constructive;
+import GRASP.LocalSearch;
 import energyDemandEstimation.ELM.elm;
 import no.uib.cipr.matrix.NotConvergedException;
 
@@ -43,7 +48,7 @@ public class EnergyDemandEstimation {
 		Solution sol = null;
 		Solution bestSol;
 		double bestAccuracy;
-		GRASP grasp = new GRASP(data);
+		LocalSearch localSearch = new LocalSearch(data);
 		int[] mostUsedVars = new int[14];
 
 		System.out.println("-----Random Constructive-----");
@@ -72,7 +77,7 @@ public class EnergyDemandEstimation {
 
 		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy);
 
-		bestSol = grasp.improve(bestSol, mostUsedVars);
+		bestSol = localSearch.improve(bestSol, mostUsedVars);
 
 		elm = new elm(0, 20, "sig");
 		elm.train(data.getTrainData(bestSol.getSelectedVars()));

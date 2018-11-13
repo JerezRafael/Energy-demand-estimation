@@ -1,6 +1,6 @@
-package energyDemandEstimation.data;
+package GRASP;
 
-import energyDemandEstimation.Solution;
+import energyDemandEstimation.misc.Solution;
 import no.uib.cipr.matrix.NotConvergedException;
 
 public interface Constructive {
