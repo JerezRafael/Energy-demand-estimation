@@ -6,11 +6,11 @@ import energyDemandEstimation.misc.Solution;
 
 import java.util.Arrays;
 
-import GRASP.CRandom;
-import GRASP.CVotos;
-import GRASP.Constructive;
-import GRASP.LocalSearch;
 import energyDemandEstimation.ELM.elm;
+import energyDemandEstimation.GRASP.CRandom;
+import energyDemandEstimation.GRASP.CVotos;
+import energyDemandEstimation.GRASP.Constructive;
+import energyDemandEstimation.GRASP.LocalSearch;
 import no.uib.cipr.matrix.NotConvergedException;
 
 public class EnergyDemandEstimation {

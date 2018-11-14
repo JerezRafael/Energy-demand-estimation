@@ -1,4 +1,4 @@
-package GRASP;
+package energyDemandEstimation.GRASP;
 
 import energyDemandEstimation.misc.Solution;
 import no.uib.cipr.matrix.NotConvergedException;

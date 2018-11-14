@@ -1,4 +1,4 @@
-package GRASP;
+package energyDemandEstimation.GRASP;
 
 import java.util.ArrayList;
 
