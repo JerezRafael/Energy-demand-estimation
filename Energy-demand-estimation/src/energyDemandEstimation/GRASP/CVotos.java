@@ -25,7 +25,7 @@ public class CVotos implements Constructive {
 		boolean[] selectedAlready;
 		selectedAlready = new boolean[14];
 
-		nVars = RandomManager.getRandom().nextInt(14) + 1; // numero de variables que se van a elegir esta iteracion
+		nVars = RandomManager.getRandom().nextInt(14) + 1; // numero de variables que se van a elegir esta iteración
 
 		for (int j = 0; j < nVars; j++) { // eligiendo variables por la ruleta
 
@@ -43,8 +43,6 @@ public class CVotos implements Constructive {
 					selectedAlready[k] = true;
 					wheel[k]--;
 					break;
-					// es correcto poner un break? o mejor poner
-					// selectedVars[k] = random > wheel[k] & random < wheel[k + 1]
 				}
 			}
 		}

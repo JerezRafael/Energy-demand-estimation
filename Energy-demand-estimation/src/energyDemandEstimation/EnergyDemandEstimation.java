@@ -4,8 +4,6 @@ import energyDemandEstimation.data.*;
 import energyDemandEstimation.misc.RandomManager;
 import energyDemandEstimation.misc.Solution;
 
-import java.util.Arrays;
-
 import energyDemandEstimation.ELM.elm;
 import energyDemandEstimation.GRASP.CRandom;
 import energyDemandEstimation.GRASP.CVotos;
@@ -19,39 +17,21 @@ public class EnergyDemandEstimation {
 
 	public static void main(String[] args) throws NotConvergedException {
 
-		RandomManager.setSeed(1234);
-
-		// pruebas
-
-		// puerta AND
-		System.out.println("\nTest AND:");
-		elm ds3 = new elm(0, 20, "sig");
-		double[][] traindata = new double[][] { { 0, 0 }, { 1, 1 } };
-		// double[][] traindata = new double[][] { { 1, 0, 0 }, { 0, 0, 1 }, { 0, 1, 0
-		// }, { 1, 1, 1 } };
-		ds3.train(traindata);
-		double[][] inpt = new double[][] { { 5000, 1 } };
-		// double[][] inpt = new double[][] { { 5000, 0, 0 }, { 5000, 0, 1 }, { 5000, 1,
-		// 0 }, { 5001, 1, 1 } };
-		double[] salida = ds3.testOut(inpt);
-		System.out.println(Arrays.toString(salida));
-
-		System.out.println("TrainingTime:" + ds3.getTrainingTime());
-		System.out.println("TrainingAcc:" + ds3.getTrainingAccuracy());
-		System.out.println();
-
-		// pruebas
-
+		RandomManager.setSeed(12345);
 		Data data = new Data();
 		Constructive constructive;
-		elm elm;
+		elm elm = null;
 		Solution sol = null;
 		Solution bestSol;
 		double bestAccuracy;
 		LocalSearch localSearch = new LocalSearch(data);
 		int[] mostUsedVars = new int[14];
-
+		long startTime, endTime, duration;
+		
 		System.out.println("-----Random Constructive-----");
+		
+		startTime = System.nanoTime();
+		
 		constructive = new CRandom();
 
 		bestSol = null;
@@ -74,17 +54,27 @@ public class EnergyDemandEstimation {
 				}
 			}
 		}
-
-		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy);
+		
+		endTime = System.nanoTime();
+		duration = (endTime - startTime)/1000000;
+		
+		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy + " y un tiempo de " + duration);
 
 		bestSol = localSearch.improve(bestSol, mostUsedVars);
 
 		elm = new elm(0, 20, "sig");
 		elm.train(data.getTrainData(bestSol.getSelectedVars()));
 		bestAccuracy = elm.getTrainingAccuracy();
-		System.out.println("Despues del improve ha sido " + bestAccuracy);
+		
+		endTime = System.nanoTime();
+		duration = (endTime - startTime)/1000000;
+		
+		System.out.println("Despues del improve ha sido " + bestAccuracy + " y un tiempo de " + duration);
 
 		System.out.println("\n-----Votos Constructive-----");
+		
+		startTime = System.nanoTime();
+		
 		constructive = new CVotos(nIterations);
 
 		bestSol = null;
@@ -107,15 +97,22 @@ public class EnergyDemandEstimation {
 				}
 			}
 		}
+		
+		endTime = System.nanoTime();
+		duration = (endTime - startTime)/1000000;
 
-		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy);
+		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy + " y un tiempo de " + duration);
 
-		// sol = grasp.improve(sol, mostUsedVars);
+		sol = localSearch.improve(sol, mostUsedVars);
 
 		elm = new elm(0, 20, "sig");
 		elm.train(data.getTrainData(sol.getSelectedVars()));
 		bestAccuracy = elm.getTrainingAccuracy();
-		System.out.println("Despues del improve ha sido " + bestAccuracy);
+		
+		endTime = System.nanoTime();
+		duration = (endTime - startTime)/1000000;
+		
+		System.out.println("Despues del improve ha sido " + bestAccuracy + " y un tiempo de " + duration);
 
 	}
 
