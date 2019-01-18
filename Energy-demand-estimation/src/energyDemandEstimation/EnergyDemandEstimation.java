@@ -4,6 +4,8 @@ import energyDemandEstimation.data.*;
 import energyDemandEstimation.misc.RandomManager;
 import energyDemandEstimation.misc.Solution;
 
+import java.util.Arrays;
+
 import energyDemandEstimation.ELM.elm;
 import energyDemandEstimation.GRASP.CRandom;
 import energyDemandEstimation.GRASP.CVotos;
@@ -14,10 +16,13 @@ import no.uib.cipr.matrix.NotConvergedException;
 public class EnergyDemandEstimation {
 
 	final static int nIterations = 100;
+	final static int añoInicio = 1981;
+	final static int añosTrain = 4;
+	final static int añoBuscado = añoInicio + añosTrain;
 
 	public static void main(String[] args) throws NotConvergedException {
 
-		RandomManager.setSeed(12345);
+		RandomManager.setSeed(1234);
 		Data data = new Data();
 		Constructive constructive;
 		elm elm = null;
@@ -26,12 +31,12 @@ public class EnergyDemandEstimation {
 		double bestAccuracy;
 		LocalSearch localSearch = new LocalSearch(data);
 		int[] mostUsedVars = new int[14];
-		long startTime, endTime, duration;
-		
+		int year, numVars = 0;
+		double[] output;
+		double[][] testData, trainData = null;
+
 		System.out.println("-----Random Constructive-----");
-		
-		startTime = System.nanoTime();
-		
+
 		constructive = new CRandom();
 
 		bestSol = null;
@@ -39,10 +44,24 @@ public class EnergyDemandEstimation {
 
 		for (int i = 0; i < nIterations; i++) {
 			sol = constructive.generateSolution();
+			numVars = 0;
+
+			// Contamos el número de variables escogidas
+			for (int j = 0; j < sol.getSelectedVars().length; j++) {
+				if (sol.getSelectedVars()[j])
+					numVars++;
+			}
+
+			// Cogemos los años anteriores al que vamos a testear
+			trainData = new double[4][numVars];
+			year = añoInicio;
+			for (int j = 0; j < trainData.length; j++) {
+				trainData[j] = data.getYear(year, sol.getSelectedVars());
+				year++;
+			}
 
 			// Se prueba la posible solución
 			elm = new elm(0, 20, "sig");
-			double[][] trainData = data.getTrainData(sol.getSelectedVars());
 			elm.train(trainData);
 
 			if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
@@ -54,27 +73,41 @@ public class EnergyDemandEstimation {
 				}
 			}
 		}
-		
-		endTime = System.nanoTime();
-		duration = (endTime - startTime)/1000000;
-		
-		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy + " y un tiempo de " + duration);
 
 		bestSol = localSearch.improve(bestSol, mostUsedVars);
 
+		numVars = 0;
+		for (int i = 0; i < bestSol.getSelectedVars().length; i++) {
+			if (bestSol.getSelectedVars()[i])
+				numVars++;
+		}
+		trainData = new double[añosTrain][numVars];
+		year = añoInicio;
+		for (int i = 0; i < trainData.length; i++) {
+			trainData[i] = data.getYear(year, bestSol.getSelectedVars());
+			year++;
+		}
+
+		testData = new double[2][];
+		testData[0] = data.getYear(year, bestSol.getSelectedVars());
+		testData[1] = data.getYear(year, bestSol.getSelectedVars());
+		System.out.println("Año buscado: " + añoBuscado);
+
 		elm = new elm(0, 20, "sig");
-		elm.train(data.getTrainData(bestSol.getSelectedVars()));
-		bestAccuracy = elm.getTrainingAccuracy();
-		
-		endTime = System.nanoTime();
-		duration = (endTime - startTime)/1000000;
-		
-		System.out.println("Despues del improve ha sido " + bestAccuracy + " y un tiempo de " + duration);
+		elm.train(trainData);
+		numVars = 0;
+		for (int i = 0; i < bestSol.getSelectedVars().length; i++) {
+			if (bestSol.getSelectedVars()[i])
+				numVars++;
+		}
+		output = elm.testOut(testData);
+
+		System.out.println(Arrays.toString(output));
+
+////////////////////////////////////////////////////////////////////////////
 
 		System.out.println("\n-----Votos Constructive-----");
-		
-		startTime = System.nanoTime();
-		
+
 		constructive = new CVotos(nIterations);
 
 		bestSol = null;
@@ -82,10 +115,24 @@ public class EnergyDemandEstimation {
 
 		for (int i = 0; i < nIterations; i++) {
 			sol = constructive.generateSolution();
+			numVars = 0;
+
+			// Contamos el número de variables escogidas
+			for (int j = 0; j < sol.getSelectedVars().length; j++) {
+				if (sol.getSelectedVars()[j])
+					numVars++;
+			}
+
+			// Cogemos los años anteriores al que vamos a testear
+			trainData = new double[4][numVars];
+			year = añoInicio;
+			for (int j = 0; j < trainData.length; j++) {
+				trainData[j] = data.getYear(year, sol.getSelectedVars());
+				year++;
+			}
 
 			// Se prueba la posible solución
 			elm = new elm(0, 20, "sig");
-			double[][] trainData = data.getTrainData(sol.getSelectedVars());
 			elm.train(trainData);
 
 			if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
@@ -97,23 +144,36 @@ public class EnergyDemandEstimation {
 				}
 			}
 		}
-		
-		endTime = System.nanoTime();
-		duration = (endTime - startTime)/1000000;
 
-		System.out.println("La mejor ejecución del train ha tenido una accuracy de " + bestAccuracy + " y un tiempo de " + duration);
+		bestSol = localSearch.improve(bestSol, mostUsedVars);
 
-		sol = localSearch.improve(sol, mostUsedVars);
+		numVars = 0;
+		for (int i = 0; i < bestSol.getSelectedVars().length; i++) {
+			if (bestSol.getSelectedVars()[i])
+				numVars++;
+		}
+		trainData = new double[añosTrain][numVars];
+		year = añoInicio;
+		for (int i = 0; i < trainData.length; i++) {
+			trainData[i] = data.getYear(year, bestSol.getSelectedVars());
+			year++;
+		}
+
+		testData = new double[2][];
+		testData[0] = data.getYear(year, bestSol.getSelectedVars());
+		testData[1] = data.getYear(year, bestSol.getSelectedVars());
+		System.out.println("Año buscado: " + añoBuscado);
 
 		elm = new elm(0, 20, "sig");
-		elm.train(data.getTrainData(sol.getSelectedVars()));
-		bestAccuracy = elm.getTrainingAccuracy();
+		elm.train(trainData);
+		numVars = 0;
+		for (int i = 0; i < bestSol.getSelectedVars().length; i++) {
+			if (bestSol.getSelectedVars()[i])
+				numVars++;
+		}
 		
-		endTime = System.nanoTime();
-		duration = (endTime - startTime)/1000000;
+		output = elm.testOut(testData);
 		
-		System.out.println("Despues del improve ha sido " + bestAccuracy + " y un tiempo de " + duration);
-
+		System.out.println(Arrays.toString(output));
 	}
-
 }

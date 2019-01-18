@@ -77,8 +77,17 @@ public class Data {
 		};
 	}
 
-	public double[] getYear(int year) {
-		return data[year % 1981];
+	public double[] getYear(int year, boolean[] selectedVars) {
+		double[] yearData = new double[contarVariables(selectedVars) + 1];
+		yearData[0] = data[year % 1981][0];
+		int j = 1;
+		for (int i = 0; i < selectedVars.length; i++) {
+			if (selectedVars[i]) { // cuando es una variable elegida, la copia y pasamos de posicion
+				yearData[j] = data[year % 1981][j];
+				j++;
+			}
+		}
+		return yearData;
 	}
 
 	public double[][] getTrainData(boolean[] selectedVars) {

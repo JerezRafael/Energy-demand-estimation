@@ -51,8 +51,6 @@ public class LocalSearch {
 			varsAux = new boolean[14];
 			n = 1 + RandomManager.getRandom().nextInt(14); // numero de variables que cogeremos
 
-			// si en mostUsedVars hay 5 variables, n deberia poder salir mas de 5?
-
 			j = 0;
 			while (j < n) { // escoger nuevas variables
 
