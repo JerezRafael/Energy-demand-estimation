@@ -17,8 +17,8 @@ public class EnergyDemandEstimation {
 
 	final static int nIterations = 100;
 	final static int añoInicio = 1981;
-	final static int añosTrain = 4;
-	final static int añoBuscado = añoInicio + añosTrain;
+	final static int añoBuscado = 2011;
+	final static int añosTrain = añoBuscado - añoInicio;
 
 	public static void main(String[] args) throws NotConvergedException {
 
