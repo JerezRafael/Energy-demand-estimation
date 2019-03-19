@@ -20,7 +20,7 @@ public class EnergyDemandEstimation {
 
 	final static int nIterations = 100;
 	final static int añoInicio = 1981;
-	final static int añoBuscado = 1999;
+	final static int añoBuscado = 2011;
 	final static int añosTrain = añoBuscado - añoInicio;
 
 	public static void main(String[] args) throws NotConvergedException {
@@ -38,6 +38,8 @@ public class EnergyDemandEstimation {
 		double[] output;
 		double[][] testData, trainData = null;
 		boolean exception;
+		long startTime, endTime, durationCR, durationTCR, durationCV, durationTCV;
+
 		System.out.println("Año buscado: " + añoBuscado);
 
 		/* CSV */
@@ -54,16 +56,27 @@ public class EnergyDemandEstimation {
 			sb.append("CVotos");
 			sb.append(";");
 			sb.append("Total CV");
+			sb.append(";");
+			sb.append("Tiempo CR");
+			sb.append(";");
+			sb.append("Tiempo Total CR");
+			sb.append(";");
+			sb.append("Tiempo CV");
+			sb.append(";");
+			sb.append("Tiempo Total CV");
 			sb.append("\n");
 
 			// Bucle para obtener 10 resultados y exportarlos a un csv
-			for (int n = 0; n < 10; n++) {
-				
+			for (int n = 0; n < 100; n++) {
+
 				sb.append(n + 1);
 				sb.append(";");
 				System.out.println("\nn = " + (n + 1));
+
+				startTime = System.nanoTime();
+
 				System.out.println("\n-----Random Constructive-----");
-				
+
 				constructive = new CRandom();
 
 				bestSol = null;
@@ -89,7 +102,18 @@ public class EnergyDemandEstimation {
 
 					// Se prueba la posible solución
 					elm = new elm(0, 20, "sig");
-					elm.train(trainData);
+
+					exception = true;
+					elm = new elm(0, 20, "sig");
+					while (exception) {
+						exception = false;
+						try {
+							elm = new elm(0, 20, "sig");
+							elm.train(trainData);
+						} catch (Exception e) {
+							exception = true;
+						}
+					}
 
 					if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
 						bestAccuracy = elm.getTrainingAccuracy();
@@ -100,6 +124,9 @@ public class EnergyDemandEstimation {
 						}
 					}
 				}
+
+				endTime = System.nanoTime();
+				durationCR = (endTime - startTime) / 1000000;
 
 				// Probamos antes cuando daría sin utilizar la busqueda local
 				numVars = 0;
@@ -120,7 +147,19 @@ public class EnergyDemandEstimation {
 				System.out.println("SIN MEJORA");
 
 				elm = new elm(0, 20, "sig");
-				elm.train(trainData);
+
+				exception = true;
+				elm = new elm(0, 20, "sig");
+				while (exception) {
+					exception = false;
+					try {
+						elm = new elm(0, 20, "sig");
+						elm.train(trainData);
+					} catch (Exception e) {
+						exception = true;
+					}
+				}
+
 				numVars = 0;
 				for (int i = 0; i < bestSol.getSelectedVars().length; i++) {
 					if (bestSol.getSelectedVars()[i])
@@ -129,11 +168,13 @@ public class EnergyDemandEstimation {
 				output = elm.testOut(testData);
 
 				System.out.println(Arrays.toString(output));
-				
+
 				sb.append(output[0]);
 				sb.append(";");
 
 				// Busqueda local y resultados
+				startTime = System.nanoTime();
+
 				exception = true;
 				while (exception) {
 					exception = false;
@@ -162,7 +203,19 @@ public class EnergyDemandEstimation {
 				System.out.println("CON MEJORA");
 
 				elm = new elm(0, 20, "sig");
-				elm.train(trainData);
+
+				exception = true;
+				elm = new elm(0, 20, "sig");
+				while (exception) {
+					exception = false;
+					try {
+						elm = new elm(0, 20, "sig");
+						elm.train(trainData);
+					} catch (Exception e) {
+						exception = true;
+					}
+				}
+
 				numVars = 0;
 				for (int i = 0; i < bestSol.getSelectedVars().length; i++) {
 					if (bestSol.getSelectedVars()[i])
@@ -170,12 +223,17 @@ public class EnergyDemandEstimation {
 				}
 				output = elm.testOut(testData);
 
+				endTime = System.nanoTime();
+				durationTCR = (endTime - startTime) / 1000000;
+
 				System.out.println(Arrays.toString(output));
-				
+
 				sb.append(output[0]);
 				sb.append(";");
 
 				////////////////////////////////////////////////////////////////////////////
+
+				startTime = System.nanoTime();
 
 				System.out.println("\n-----Votos Constructive-----");
 
@@ -204,7 +262,18 @@ public class EnergyDemandEstimation {
 
 					// Se prueba la posible solución
 					elm = new elm(0, 20, "sig");
-					elm.train(trainData);
+
+					exception = true;
+					elm = new elm(0, 20, "sig");
+					while (exception) {
+						exception = false;
+						try {
+							elm = new elm(0, 20, "sig");
+							elm.train(trainData);
+						} catch (Exception e) {
+							exception = true;
+						}
+					}
 
 					if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
 						bestAccuracy = elm.getTrainingAccuracy();
@@ -215,6 +284,9 @@ public class EnergyDemandEstimation {
 						}
 					}
 				}
+
+				endTime = System.nanoTime();
+				durationCV = (endTime - startTime) / 1000000;
 
 				// Probamos antes cuando daría sin utilizar la busqueda local
 				numVars = 0;
@@ -234,8 +306,18 @@ public class EnergyDemandEstimation {
 				testData[1] = data.getYear(year, bestSol.getSelectedVars());
 				System.out.println("SIN MEJORA");
 
+				exception = true;
 				elm = new elm(0, 20, "sig");
-				elm.train(trainData);
+				while (exception) {
+					exception = false;
+					try {
+						elm = new elm(0, 20, "sig");
+						elm.train(trainData);
+					} catch (Exception e) {
+						exception = true;
+					}
+				}
+
 				numVars = 0;
 				for (int i = 0; i < bestSol.getSelectedVars().length; i++) {
 					if (bestSol.getSelectedVars()[i])
@@ -244,11 +326,13 @@ public class EnergyDemandEstimation {
 				output = elm.testOut(testData);
 
 				System.out.println(Arrays.toString(output));
-				
+
 				sb.append(output[0]);
 				sb.append(";");
 
 				// Busqueda local y resultados
+				startTime = System.nanoTime();
+
 				exception = true;
 				while (exception) {
 					exception = false;
@@ -276,8 +360,18 @@ public class EnergyDemandEstimation {
 				testData[1] = data.getYear(year, bestSol.getSelectedVars());
 				System.out.println("CON MEJORA");
 
+				exception = true;
 				elm = new elm(0, 20, "sig");
-				elm.train(trainData);
+				while (exception) {
+					exception = false;
+					try {
+						elm = new elm(0, 20, "sig");
+						elm.train(trainData);
+					} catch (Exception e) {
+						exception = true;
+					}
+				}
+
 				numVars = 0;
 				for (int i = 0; i < bestSol.getSelectedVars().length; i++) {
 					if (bestSol.getSelectedVars()[i])
@@ -286,9 +380,20 @@ public class EnergyDemandEstimation {
 
 				output = elm.testOut(testData);
 
+				endTime = System.nanoTime();
+				durationTCV = (endTime - startTime) / 1000000;
+
 				System.out.println(Arrays.toString(output));
-				
+
 				sb.append(output[0]);
+				sb.append(";");
+				sb.append(durationCR);
+				sb.append(";");
+				sb.append(durationTCR);
+				sb.append(";");
+				sb.append(durationCV);
+				sb.append(";");
+				sb.append(durationTCV);
 				sb.append("\n");
 			}
 			pw.write(sb.toString());
@@ -297,6 +402,7 @@ public class EnergyDemandEstimation {
 			e.printStackTrace();
 		}
 		/* CSV */
+		System.out.println("\nAño buscado: " + añoBuscado);
 	}
 
 }

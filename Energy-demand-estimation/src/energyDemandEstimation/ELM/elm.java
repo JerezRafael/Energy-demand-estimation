@@ -429,7 +429,8 @@ public class elm {
 		NumberofInputNeurons = test_set.numColumns() - 1;
 
 		DenseMatrix ttestT = new DenseMatrix(numTestData, 1); // va a ser la columna inutil 5000 traspuesta
-		DenseMatrix ttestP = new DenseMatrix(numTestData, NumberofInputNeurons); // va a ser todos los datos utiles traspuesta
+		DenseMatrix ttestP = new DenseMatrix(numTestData, NumberofInputNeurons); // va a ser todos los datos utiles
+																					// traspuesta
 		for (int i = 0; i < numTestData; i++) {
 			ttestT.set(i, 0, test_set.get(i, 0));
 			for (int j = 1; j <= NumberofInputNeurons; j++)
