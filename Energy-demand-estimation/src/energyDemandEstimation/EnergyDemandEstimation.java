@@ -18,10 +18,10 @@ import no.uib.cipr.matrix.NotConvergedException;
 
 public class EnergyDemandEstimation {
 
-	final static int referenceYear = 1985;
+	final static int referenceYear = 1989;
 	final static int nExecutions = 100;
 	final static int nIterations = 100;
-	final static int nLSObjectiveFunction = 20;
+	final static int nLSObjectiveFunction = 100;
 
 	public static void main(String[] args) throws NotConvergedException {
 
@@ -31,7 +31,7 @@ public class EnergyDemandEstimation {
 		elm elm = null;
 		Solution sol = null;
 		Solution bestSol;
-		double bestAccuracy;
+		double minError, currentError;
 		LocalSearch localSearch = new LocalSearch(data);
 		int year, numVars = 0;
 		int[] mostUsedVars = new int[14];
@@ -81,7 +81,7 @@ public class EnergyDemandEstimation {
 				constructive = new CRandom();
 
 				bestSol = null;
-				bestAccuracy = Double.MAX_VALUE;
+				minError = Double.MAX_VALUE;
 
 				for (int i = 0; i < nIterations; i++) {
 					sol = constructive.generateSolution();
@@ -102,22 +102,10 @@ public class EnergyDemandEstimation {
 					}
 
 					// Se prueba la posible solución
-					elm = new elm(0, 20, "sig");
+					currentError = calculateError(nLSObjectiveFunction, trainData, trainData, sol);
 
-					exception = true;
-					elm = new elm(0, 20, "sig");
-					while (exception) {
-						exception = false;
-						try {
-							elm = new elm(0, 20, "sig");
-							elm.train(trainData);
-						} catch (Exception e) {
-							exception = true;
-						}
-					}
-
-					if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
-						bestAccuracy = elm.getTrainingAccuracy();
+					if (currentError < minError) { // Si es mejor se guarda
+						minError = currentError;
 						bestSol = sol;
 						for (int j = 0; j < mostUsedVars.length; j++) {
 							if (sol.getSelectedVars()[j])
@@ -235,7 +223,7 @@ public class EnergyDemandEstimation {
 				constructive = new CVotos(nIterations);
 
 				bestSol = null;
-				bestAccuracy = Double.MAX_VALUE;
+				minError = Double.MAX_VALUE;
 
 				for (int i = 0; i < nIterations; i++) {
 					sol = constructive.generateSolution();
@@ -256,20 +244,10 @@ public class EnergyDemandEstimation {
 					}
 
 					// Se prueba la posible solución
+					currentError = calculateError(nLSObjectiveFunction, trainData, trainData, sol);
 
-					exception = true;
-					while (exception) {
-						exception = false;
-						try {
-							elm = new elm(0, 20, "sig");
-							elm.train(trainData);
-						} catch (Exception e) {
-							exception = true;
-						}
-					}
-
-					if (elm.getTrainingAccuracy() < bestAccuracy) { // Si es mejor se guarda
-						bestAccuracy = elm.getTrainingAccuracy();
+					if (currentError < minError) { // Si es mejor se guarda
+						minError = currentError;
 						bestSol = sol;
 						for (int j = 0; j < mostUsedVars.length; j++) {
 							if (sol.getSelectedVars()[j])
@@ -400,4 +378,36 @@ public class EnergyDemandEstimation {
 		System.out.println("\nAño buscado: " + referenceYear);
 	}
 
+	public static double calculateError(int nLSIterations, double[][] trainData, double[][] testData, Solution currentSol) {
+		
+		boolean exception;
+		elm elm = null;
+		double[] output;
+		double currentError = 1;
+		
+		for (int j = 0; j < nLSIterations; j++) {
+
+			exception = true;
+			while (exception) {
+				exception = false;
+				try {
+					elm = new elm(0, 20, "sig");
+					elm.train(trainData);
+				} catch (Exception e) {
+					exception = true;
+				}
+			}
+
+			output = elm.testOut(testData);
+
+			//System.out.println(testData[0][0] + " - " + output[0]);
+
+			currentError += Math.abs(testData[0][0] - output[0]);
+
+		}
+
+		currentError = currentError / nLSIterations;
+		return currentError;
+	}
+	
 }

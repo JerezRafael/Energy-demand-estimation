@@ -17,7 +17,7 @@ public class LocalSearch {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Solution improve(Solution solution, int[] mostUsedVars, int añoBuscado, int nLSIterations) throws NotConvergedException {
+	public Solution improve(Solution solution, int[] mostUsedVars, int referenceYear, int nLSIterations) throws NotConvergedException {
 
 		ArrayList<Integer> roullete = new ArrayList<Integer>();
 
@@ -35,17 +35,29 @@ public class LocalSearch {
 			}
 		}
 
-		double currentError, minError = Double.MAX_VALUE;
-		double[] output;
+		double currentError, minError;
 		double[][] trainData, testData;
-		boolean removing, exception;
+		boolean removing;
 		boolean[] bestVars = solution.getSelectedVars();
 		boolean[] vars;
-		int n, var, numVars, year;
+		int n, var, year;
 		elm elm;
 		Solution newSolution, currentSol = solution;
 		final ArrayList<Integer> finalRoullete = (ArrayList<Integer>) roullete.clone();
+		
+		// Calculamos el error con la solución actual
+		trainData = createTrainData(solution, referenceYear);
+		
+		year = referenceYear - 1;
+		
+		testData = new double[2][];
+		testData[0] = data.getYear(year, solution.getSelectedVars());
+		testData[1] = data.getYear(year, solution.getSelectedVars());
+		
+		minError = calculateError(nLSIterations, trainData, testData, currentSol);
 
+		// Ahora empezamos la busqueda local
+		
 		for (int i = 0; i < 100; i++) {
 
 			roullete = (ArrayList<Integer>) finalRoullete.clone();
@@ -74,49 +86,15 @@ public class LocalSearch {
 
 			currentSol = new Solution(vars);
 
-			numVars = 0;
-			for (int j = 0; j < currentSol.getSelectedVars().length; j++) {
-				if (currentSol.getSelectedVars()[j])
-					numVars++;
-			}
-			trainData = new double[añoBuscado - 1981][numVars];
-			year = 1981;
-			for (int j = 0; j < trainData.length; j++) {
-				trainData[j] = data.getYear(year, currentSol.getSelectedVars());
-				year++;
-			}
-
+			trainData = createTrainData(currentSol, referenceYear);
+			
+			year = referenceYear - 1;
+			
 			testData = new double[2][];
 			testData[0] = data.getYear(year, currentSol.getSelectedVars());
 			testData[1] = data.getYear(year, currentSol.getSelectedVars());
-
-			for (int j = 0; j < nLSIterations; j++) {
-
-				exception = true;
-				while (exception) {
-					exception = false;
-					try {
-						elm = new elm(0, 20, "sig");
-						elm.train(trainData);
-					} catch (Exception e) {
-						exception = true;
-					}
-				}
-
-				numVars = 0;
-				for (int k = 0; k < currentSol.getSelectedVars().length; k++) {
-					if (currentSol.getSelectedVars()[k])
-						numVars++;
-				}
-				output = elm.testOut(testData);
-
-				//System.out.println(testData[0][0] + " - " + output[0]);
-
-				currentError += Math.abs(testData[0][0] - output[0]);
-
-			}
-
-			currentError = currentError / 100;
+			
+			currentError = calculateError(nLSIterations, trainData, testData, currentSol);
 
 			if (currentError < minError) { // Si es mejor se guarda
 				minError = currentError;
@@ -129,5 +107,57 @@ public class LocalSearch {
 
 		return newSolution;
 
+	}
+	
+	private double calculateError(int nLSIterations, double[][] trainData, double[][] testData, Solution currentSol) {
+		
+		boolean exception;
+		elm elm = null;
+		double[] output;
+		double currentError = 1;
+		
+		for (int j = 0; j < nLSIterations; j++) {
+
+			exception = true;
+			while (exception) {
+				exception = false;
+				try {
+					elm = new elm(0, 20, "sig");
+					elm.train(trainData);
+				} catch (Exception e) {
+					exception = true;
+				}
+			}
+
+			output = elm.testOut(testData);
+
+			//System.out.println(testData[0][0] + " - " + output[0]);
+
+			currentError += Math.abs(testData[0][0] - output[0]);
+
+		}
+
+		currentError = currentError / nLSIterations;
+		return currentError;
+	}
+	
+	private double[][] createTrainData(Solution solution, int referenceYear) {
+		
+		int numVars;
+		double[][] trainData;
+		
+		numVars = 0;
+		for (int j = 0; j < solution.getSelectedVars().length; j++) {
+			if (solution.getSelectedVars()[j])
+				numVars++;
+		}
+		trainData = new double[referenceYear - 1981 - 1][numVars];
+		int year = 1981;
+		for (int j = 0; j < trainData.length; j++) {
+			trainData[j] = data.getYear(year, solution.getSelectedVars());
+			year++;
+		}
+		
+		return trainData;
 	}
 }
