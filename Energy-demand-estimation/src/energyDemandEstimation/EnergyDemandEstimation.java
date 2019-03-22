@@ -18,10 +18,10 @@ import no.uib.cipr.matrix.NotConvergedException;
 
 public class EnergyDemandEstimation {
 
+	final static int referenceYear = 1985;
+	final static int nExecutions = 100;
 	final static int nIterations = 100;
-	final static int añoInicio = 1981;
-	final static int añoBuscado = 2011;
-	final static int añosTrain = añoBuscado - añoInicio;
+	final static int nLSObjectiveFunction = 20;
 
 	public static void main(String[] args) throws NotConvergedException {
 
@@ -33,21 +33,22 @@ public class EnergyDemandEstimation {
 		Solution bestSol;
 		double bestAccuracy;
 		LocalSearch localSearch = new LocalSearch(data);
-		int[] mostUsedVars = new int[14];
 		int year, numVars = 0;
+		int[] mostUsedVars = new int[14];
 		double[] output;
-		double[][] testData, trainData = null;
+		double[][] testData, trainData;
 		boolean exception;
 		long startTime, endTime, durationCR, durationTCR, durationCV, durationTCV;
+		String sbS;
 
-		System.out.println("Año buscado: " + añoBuscado);
+		System.out.println("Año buscado: " + referenceYear);
 
 		/* CSV */
 		PrintWriter pw;
 		try {
-			pw = new PrintWriter(new File(añoBuscado + ".csv"));
+			pw = new PrintWriter(new File(referenceYear + " - " + nExecutions + ".csv"));
 			StringBuilder sb = new StringBuilder();
-			sb.append(añoBuscado);
+			sb.append(referenceYear);
 			sb.append(";");
 			sb.append("CRandom");
 			sb.append(";");
@@ -66,8 +67,8 @@ public class EnergyDemandEstimation {
 			sb.append("Tiempo Total CV");
 			sb.append("\n");
 
-			// Bucle para obtener 10 resultados y exportarlos a un csv
-			for (int n = 0; n < 100; n++) {
+			// Bucle para obtener nEjecuciones resultados y exportarlos a un csv
+			for (int n = 0; n < nExecutions; n++) {
 
 				sb.append(n + 1);
 				sb.append(";");
@@ -94,7 +95,7 @@ public class EnergyDemandEstimation {
 
 					// Cogemos los años anteriores al que vamos a testear
 					trainData = new double[4][numVars];
-					year = añoInicio;
+					year = 1981;
 					for (int j = 0; j < trainData.length; j++) {
 						trainData[j] = data.getYear(year, sol.getSelectedVars());
 						year++;
@@ -134,8 +135,8 @@ public class EnergyDemandEstimation {
 					if (bestSol.getSelectedVars()[i])
 						numVars++;
 				}
-				trainData = new double[añosTrain][numVars];
-				year = añoInicio;
+				trainData = new double[referenceYear - 1981][numVars];
+				year = 1981;
 				for (int i = 0; i < trainData.length; i++) {
 					trainData[i] = data.getYear(year, bestSol.getSelectedVars());
 					year++;
@@ -146,10 +147,7 @@ public class EnergyDemandEstimation {
 				testData[1] = data.getYear(year, bestSol.getSelectedVars());
 				System.out.println("SIN MEJORA");
 
-				elm = new elm(0, 20, "sig");
-
 				exception = true;
-				elm = new elm(0, 20, "sig");
 				while (exception) {
 					exception = false;
 					try {
@@ -179,7 +177,7 @@ public class EnergyDemandEstimation {
 				while (exception) {
 					exception = false;
 					try {
-						bestSol = localSearch.improve(bestSol, mostUsedVars);
+						bestSol = localSearch.improve(bestSol, mostUsedVars, referenceYear, nLSObjectiveFunction);
 					} catch (Exception e) {
 						exception = true;
 					}
@@ -190,8 +188,8 @@ public class EnergyDemandEstimation {
 					if (bestSol.getSelectedVars()[i])
 						numVars++;
 				}
-				trainData = new double[añosTrain][numVars];
-				year = añoInicio;
+				trainData = new double[referenceYear - 1981][numVars];
+				year = 1981;
 				for (int i = 0; i < trainData.length; i++) {
 					trainData[i] = data.getYear(year, bestSol.getSelectedVars());
 					year++;
@@ -202,10 +200,7 @@ public class EnergyDemandEstimation {
 				testData[1] = data.getYear(year, bestSol.getSelectedVars());
 				System.out.println("CON MEJORA");
 
-				elm = new elm(0, 20, "sig");
-
 				exception = true;
-				elm = new elm(0, 20, "sig");
 				while (exception) {
 					exception = false;
 					try {
@@ -254,17 +249,15 @@ public class EnergyDemandEstimation {
 
 					// Cogemos los años anteriores al que vamos a testear
 					trainData = new double[4][numVars];
-					year = añoInicio;
+					year = 1981;
 					for (int j = 0; j < trainData.length; j++) {
 						trainData[j] = data.getYear(year, sol.getSelectedVars());
 						year++;
 					}
 
 					// Se prueba la posible solución
-					elm = new elm(0, 20, "sig");
 
 					exception = true;
-					elm = new elm(0, 20, "sig");
 					while (exception) {
 						exception = false;
 						try {
@@ -294,8 +287,8 @@ public class EnergyDemandEstimation {
 					if (bestSol.getSelectedVars()[i])
 						numVars++;
 				}
-				trainData = new double[añosTrain][numVars];
-				year = añoInicio;
+				trainData = new double[referenceYear - 1981][numVars];
+				year = 1981;
 				for (int i = 0; i < trainData.length; i++) {
 					trainData[i] = data.getYear(year, bestSol.getSelectedVars());
 					year++;
@@ -307,7 +300,6 @@ public class EnergyDemandEstimation {
 				System.out.println("SIN MEJORA");
 
 				exception = true;
-				elm = new elm(0, 20, "sig");
 				while (exception) {
 					exception = false;
 					try {
@@ -337,7 +329,7 @@ public class EnergyDemandEstimation {
 				while (exception) {
 					exception = false;
 					try {
-						bestSol = localSearch.improve(bestSol, mostUsedVars);
+						bestSol = localSearch.improve(bestSol, mostUsedVars, referenceYear, nLSObjectiveFunction);
 					} catch (Exception e) {
 						exception = true;
 					}
@@ -348,8 +340,8 @@ public class EnergyDemandEstimation {
 					if (bestSol.getSelectedVars()[i])
 						numVars++;
 				}
-				trainData = new double[añosTrain][numVars];
-				year = añoInicio;
+				trainData = new double[referenceYear - 1981][numVars];
+				year = 1981;
 				for (int i = 0; i < trainData.length; i++) {
 					trainData[i] = data.getYear(year, bestSol.getSelectedVars());
 					year++;
@@ -361,7 +353,6 @@ public class EnergyDemandEstimation {
 				System.out.println("CON MEJORA");
 
 				exception = true;
-				elm = new elm(0, 20, "sig");
 				while (exception) {
 					exception = false;
 					try {
@@ -396,13 +387,17 @@ public class EnergyDemandEstimation {
 				sb.append(durationTCV);
 				sb.append("\n");
 			}
-			pw.write(sb.toString());
+
+			sbS = sb.toString();
+			sbS = sbS.replace(".", ",");
+
+			pw.write(sbS);
 			pw.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		/* CSV */
-		System.out.println("\nAño buscado: " + añoBuscado);
+		System.out.println("\nAño buscado: " + referenceYear);
 	}
 
 }
