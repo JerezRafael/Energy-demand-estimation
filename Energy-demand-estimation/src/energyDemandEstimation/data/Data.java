@@ -1,5 +1,7 @@
 package energyDemandEstimation.data;
 
+import energyDemandEstimation.misc.Solution;
+
 public class Data {
 
 	private double[][] data;
@@ -78,6 +80,22 @@ public class Data {
 	}
 
 	public double[] getYear(int year, boolean[] selectedVars) {
+		
+		double[] yearData = new double[contarVariables(selectedVars) + 1];
+		yearData[0] = data[year % 1981][0];
+		int j = 1;
+		for (int i = 0; i < selectedVars.length; i++) {
+			if (selectedVars[i]) { // cuando es una variable elegida, la copia y pasamos de posicion
+				yearData[j] = data[year % 1981][j];
+				j++;
+			}
+		}
+		return yearData;
+	}
+
+	public double[] getYear(int year, Solution solution) {
+
+		boolean[] selectedVars = solution.getSelectedVars();
 		double[] yearData = new double[contarVariables(selectedVars) + 1];
 		yearData[0] = data[year % 1981][0];
 		int j = 1;
@@ -106,8 +124,42 @@ public class Data {
 		return trainDataSet;
 	}
 
+	public double[][] getTrainData(Solution solution) {
+		
+		boolean[] selectedVars = solution.getSelectedVars();
+		double[][] trainDataSet = new double[trainData.length][contarVariables(selectedVars) + 1];
+		for (int i = 0; i < trainDataSet.length; i++) {
+			trainDataSet[i][0] = trainData[i][0];
+			int k = 1;
+			for (int j = 0; j < selectedVars.length; j++) {
+				if (selectedVars[j]) { // cuando es una variable elegida, la copia y pasamos de posicion
+					trainDataSet[i][k] = trainData[i][k];
+					k++;
+				}
+			}
+		}
+		return trainDataSet;
+	}
+
 	public double[][] getTestData(boolean[] selectedVars) {
 
+		double[][] testDataSet = new double[testData.length][contarVariables(selectedVars) + 1];
+		for (int i = 0; i < testDataSet.length; i++) {
+			testDataSet[i][0] = testData[i][0];
+			int k = 1;
+			for (int j = 0; j < selectedVars.length; j++) {
+				if (selectedVars[j]) { // cuando es una variable elegida, la copia y pasamos de posicion
+					testDataSet[i][k] = testData[i][k];
+					k++;
+				}
+			}
+		}
+		return testDataSet;
+	}
+
+	public double[][] getTestData(Solution solution) {
+
+		boolean[] selectedVars = solution.getSelectedVars();
 		double[][] testDataSet = new double[testData.length][contarVariables(selectedVars) + 1];
 		for (int i = 0; i < testDataSet.length; i++) {
 			testDataSet[i][0] = testData[i][0];

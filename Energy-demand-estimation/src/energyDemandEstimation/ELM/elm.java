@@ -258,7 +258,7 @@ public class elm {
 			for (int i = 0; i < numTrainData; i++) {
 				MSE += (Yt.get(i, 0) - transT.get(i, 0)) * (Yt.get(i, 0) - transT.get(i, 0));
 			}
-			TrainingAccuracy = Math.sqrt(MSE / numTrainData);
+			TrainingAccuracy = Math.sqrt(MSE);
 		}
 
 		// CLASSIFIER
@@ -366,7 +366,7 @@ public class elm {
 			for (int i = 0; i < numTestData; i++) {
 				MSE += (Yout.get(i, 0) - testT.get(0, i)) * (Yout.get(i, 0) - testT.get(0, i));
 			}
-			TestingAccuracy = Math.sqrt(MSE / numTestData);
+			TestingAccuracy = Math.sqrt(MSE);
 		}
 
 		// CLASSIFIER

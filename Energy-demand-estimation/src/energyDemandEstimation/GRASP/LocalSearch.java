@@ -1,7 +1,5 @@
 package energyDemandEstimation.GRASP;
 
-import java.util.ArrayList;
-
 import energyDemandEstimation.ELM.elm;
 import energyDemandEstimation.data.*;
 import energyDemandEstimation.misc.RandomManager;
@@ -16,148 +14,76 @@ public class LocalSearch {
 		this.data = data;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Solution improve(Solution solution, int[] mostUsedVars, int referenceYear, int nLSIterations) throws NotConvergedException {
+	public Solution improve(Solution solution, int kMax) throws NotConvergedException {
 
-		ArrayList<Integer> roullete = new ArrayList<Integer>();
+		double bestError, currentError;
+		double[][] trainData;
+		boolean improve = true, exception;
+		boolean[] bestVars, currentVars;
+		int k, feature;
+		elm elm = null;
+		Solution newSolution;
 
-		for (int i = 0; i < mostUsedVars.length; i++) {
-			mostUsedVars[i]++;
-		}
+		bestVars = solution.getSelectedVars().clone();
+		currentVars = solution.getSelectedVars().clone();
 
-		int l = 0;
+		// Calculamos el error con la solución actual
+		trainData = data.getTrainData(bestVars);
 
-		for (int i = 0; i < mostUsedVars.length; i++) {
-			l = 0;
-			while (l < mostUsedVars[i]) {
-				roullete.add(i);
-				l++;
+		exception = true;
+		while (exception) {
+			exception = false;
+			try {
+				elm = new elm(0, 20, "sig");
+				elm.train(trainData);
+			} catch (Exception e) {
+				exception = true;
 			}
 		}
 
-		double currentError, minError;
-		double[][] trainData, testData;
-		boolean removing;
-		boolean[] bestVars = solution.getSelectedVars();
-		boolean[] vars;
-		int n, var, year;
-		elm elm;
-		Solution newSolution, currentSol = solution;
-		final ArrayList<Integer> finalRoullete = (ArrayList<Integer>) roullete.clone();
-		
-		// Calculamos el error con la solución actual
-		trainData = createTrainData(solution, referenceYear);
-		
-		year = referenceYear - 1;
-		
-		testData = new double[2][];
-		testData[0] = data.getYear(year, solution.getSelectedVars());
-		testData[1] = data.getYear(year, solution.getSelectedVars());
-		
-		minError = calculateError(nLSIterations, trainData, testData, currentSol);
+		bestError = elm.getTrainingAccuracy();
 
 		// Ahora empezamos la busqueda local
-		
-		for (int i = 0; i < 100; i++) {
 
-			roullete = (ArrayList<Integer>) finalRoullete.clone();
+		while (improve) {
+			improve = false;
+			k = 1;
+			while (k <= kMax) {
+				for (int i = 1; i < k; i++) {
 
-			vars = new boolean[14];
-			n = 1 + RandomManager.getRandom().nextInt(14); // numero de variables que cogeremos
+					feature = RandomManager.getRandom().nextInt(14);
+					currentVars[feature] = !currentVars[feature];
 
-			l = 0;
-			while (l < n) { // escoger nuevas variables
-
-				var = roullete.get(RandomManager.getRandom().nextInt(roullete.size()));
-				vars[var] = true;
-				removing = true;
-				while (removing) {
-					removing = roullete.remove((Integer) var);
 				}
 
-				l++;
+				// Función objetivo
+				trainData = data.getTrainData(currentVars);
+
+				exception = true;
+				while (exception) {
+					exception = false;
+					try {
+						elm = new elm(0, 20, "sig");
+						elm.train(trainData);
+					} catch (Exception e) {
+						exception = true;
+					}
+				}
+
+				currentError = elm.getTrainingAccuracy();
+
+				if (currentError < bestError) { // Si es mejor se guarda
+					bestError = currentError;
+					bestVars = currentVars;
+				} else {
+					k++;
+				}
 			}
-			elm = new elm(0, 20, "sig");
-			trainData = data.getTrainData(vars);
-			elm.train(trainData);
-
-			// Función objetivo
-			currentError = 0;
-
-			currentSol = new Solution(vars);
-
-			trainData = createTrainData(currentSol, referenceYear);
-			
-			year = referenceYear - 1;
-			
-			testData = new double[2][];
-			testData[0] = data.getYear(year, currentSol.getSelectedVars());
-			testData[1] = data.getYear(year, currentSol.getSelectedVars());
-			
-			currentError = calculateError(nLSIterations, trainData, testData, currentSol);
-
-			if (currentError < minError) { // Si es mejor se guarda
-				minError = currentError;
-				bestVars = vars;
-			}
-
 		}
 
 		newSolution = new Solution(bestVars);
 
 		return newSolution;
 
-	}
-	
-	private double calculateError(int nLSIterations, double[][] trainData, double[][] testData, Solution currentSol) {
-		
-		boolean exception;
-		elm elm = null;
-		double[] output;
-		double currentError = 1;
-		
-		for (int j = 0; j < nLSIterations; j++) {
-
-			exception = true;
-			while (exception) {
-				exception = false;
-				try {
-					elm = new elm(0, 20, "sig");
-					elm.train(trainData);
-				} catch (Exception e) {
-					exception = true;
-				}
-			}
-
-			output = elm.testOut(testData);
-
-			//System.out.println(testData[0][0] + " - " + output[0]);
-
-			currentError += Math.abs(testData[0][0] - output[0]);
-
-		}
-
-		currentError = currentError / nLSIterations;
-		return currentError;
-	}
-	
-	private double[][] createTrainData(Solution solution, int referenceYear) {
-		
-		int numVars;
-		double[][] trainData;
-		
-		numVars = 0;
-		for (int j = 0; j < solution.getSelectedVars().length; j++) {
-			if (solution.getSelectedVars()[j])
-				numVars++;
-		}
-		trainData = new double[referenceYear - 1981 - 1][numVars];
-		int year = 1981;
-		for (int j = 0; j < trainData.length; j++) {
-			trainData[j] = data.getYear(year, solution.getSelectedVars());
-			year++;
-		}
-		
-		return trainData;
 	}
 }
