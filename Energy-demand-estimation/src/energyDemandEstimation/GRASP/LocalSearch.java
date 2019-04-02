@@ -74,7 +74,7 @@ public class LocalSearch {
 
 				if (currentError < bestError) { // Si es mejor se guarda
 					bestError = currentError;
-					bestVars = currentVars;
+					bestVars = currentVars.clone();
 				} else {
 					k++;
 				}

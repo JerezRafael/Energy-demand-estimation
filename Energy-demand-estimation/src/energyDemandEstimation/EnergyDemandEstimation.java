@@ -7,7 +7,6 @@ import energyDemandEstimation.misc.Solution;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 import energyDemandEstimation.ELM.elm;
 import energyDemandEstimation.GRASP.CRandom;
@@ -105,13 +104,12 @@ public class EnergyDemandEstimation {
 				// Bucle para obtener nEjecuciones resultados y exportarlos a un csv
 				for (int n = 0; n < nExecutions; n++) {
 
+					System.out.print(".");
+
 					sb.append(n + 1);
 					sb.append(";");
-					System.out.println("\nn = " + (n + 1));
 
 					startTime = System.nanoTime();
-
-					System.out.println("\n-----Random Constructive-----");
 
 					constructive = new CRandom();
 
@@ -164,7 +162,6 @@ public class EnergyDemandEstimation {
 					testData = new double[2][];
 					testData[0] = data.getYear(year, bestSolution);
 					testData[1] = data.getYear(year, bestSolution);
-					System.out.println("SIN MEJORA");
 
 					exception = true;
 					while (exception) {
@@ -178,8 +175,6 @@ public class EnergyDemandEstimation {
 					}
 
 					output = elm.testOut(testData);
-
-					System.out.println(Arrays.toString(output));
 
 					sb.append(output[0]);
 					sb.append(";");
@@ -204,7 +199,6 @@ public class EnergyDemandEstimation {
 					testData = new double[2][];
 					testData[0] = data.getYear(year, bestSolution);
 					testData[1] = data.getYear(year, bestSolution);
-					System.out.println("CON MEJORA");
 
 					exception = true;
 					while (exception) {
@@ -221,16 +215,12 @@ public class EnergyDemandEstimation {
 					endTime = System.nanoTime();
 					durationTCR = (endTime - startTime) / 1000000;
 
-					System.out.println(Arrays.toString(output));
-
 					sb.append(output[0]);
 					sb.append(";");
 
 					////////////////////////////////////////////////////////////////////////////
 
 					startTime = System.nanoTime();
-
-					System.out.println("\n-----Votos Constructive-----");
 
 					constructive = new CVotos(nIterations);
 
@@ -283,7 +273,6 @@ public class EnergyDemandEstimation {
 					testData = new double[2][];
 					testData[0] = data.getYear(year, bestSolution);
 					testData[1] = data.getYear(year, bestSolution);
-					System.out.println("SIN MEJORA");
 
 					exception = true;
 					while (exception) {
@@ -297,8 +286,6 @@ public class EnergyDemandEstimation {
 					}
 
 					output = elm.testOut(testData);
-
-					System.out.println(Arrays.toString(output));
 
 					sb.append(output[0]);
 					sb.append(";");
@@ -323,7 +310,6 @@ public class EnergyDemandEstimation {
 					testData = new double[2][];
 					testData[0] = data.getYear(year, bestSolution);
 					testData[1] = data.getYear(year, bestSolution);
-					System.out.println("CON MEJORA");
 
 					exception = true;
 					while (exception) {
@@ -341,8 +327,6 @@ public class EnergyDemandEstimation {
 					endTime = System.nanoTime();
 					durationTCV = (endTime - startTime) / 1000000;
 
-					System.out.println(Arrays.toString(output));
-
 					sb.append(output[0]);
 					sb.append(";");
 					sb.append(durationCR);
@@ -354,8 +338,7 @@ public class EnergyDemandEstimation {
 					sb.append(durationTCV);
 					sb.append("\n");
 				}
-
-				System.out.println("\nAño buscado: " + referenceYear);
+				System.out.println();
 			}
 
 			sbS = sb.toString();
