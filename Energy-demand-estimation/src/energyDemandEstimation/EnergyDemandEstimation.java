@@ -48,49 +48,49 @@ public class EnergyDemandEstimation {
 
 				switch (y) {
 				case 0:
-					referenceYear = 1983;
+					referenceYear = 1985;
 					break;
 				case 1:
-					referenceYear = 1984;
-					break;
-				case 2:
 					referenceYear = 1986;
 					break;
-				case 3:
-					referenceYear = 1987;
+				case 2:
+					referenceYear = 1988;
 					break;
-				case 4:
+				case 3:
 					referenceYear = 1989;
 					break;
-				case 5:
-					referenceYear = 1990;
-					break;
-				case 6:
+				case 4:
 					referenceYear = 1992;
 					break;
-				case 7:
+				case 5:
 					referenceYear = 1993;
 					break;
+				case 6:
+					referenceYear = 1994;
+					break;
+				case 7:
+					referenceYear = 1997;
+					break;
 				case 8:
-					referenceYear = 1995;
+					referenceYear = 1998;
 					break;
 				case 9:
-					referenceYear = 1996;
-					break;
-				case 10:
 					referenceYear = 1999;
 					break;
+				case 10:
+					referenceYear = 2000;
+					break;
 				case 11:
-					referenceYear = 2001;
+					referenceYear = 2002;
 					break;
 				case 12:
-					referenceYear = 2004;
+					referenceYear = 2003;
 					break;
 				case 13:
-					referenceYear = 2007;
+					referenceYear = 2008;
 					break;
 				case 14:
-					referenceYear = 2009;
+					referenceYear = 2010;
 					break;
 				case 15:
 					referenceYear = 2011;
